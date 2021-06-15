@@ -4,7 +4,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 Use NPM INSTALL first and then NPM START to use this app.
 Before that, you need to create a .env file in the root folder and add the variable :
-REACT_APP_MOVIEDB_TOKEN = <your-api-token>
+REACT_APP_MOVIEDB_TOKEN = your-api-token
 
 For the token, you need to create a account an themovieDb.com API
   
