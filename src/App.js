@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { fetchMovies, fetchMovie, queryMovieSearch } from './utils/ApiService'
 import SideBar from './components/Sidebar'
 import MovieDetail from './components/MovieDetail'
 import Welcome from './components/Welcome'
@@ -11,43 +12,34 @@ function App() {
   const [searchValue, setSearchValue] = useState('')
 
   //request au démarrage
-  useEffect(() => {
-    fetchMovies()
+  useEffect(() =>  {
+    async function initMovies() {
+      const data = await fetchMovies()
+      setMovies(data.results)
+    }
+    initMovies()
   }, [])
 
   //request pour searchbar
   useEffect(() => {
-    queryMovieSearch(searchValue)
+    async function search() {
+      const data = await queryMovieSearch(searchValue)
+      if (data.results) {
+        setMovies(data.results)
+      } else {
+        fetchMovies()
+      }
+    }
+    search()
   }, [searchValue])
 
-  //Fetch Movies
-  const fetchMovies = async () => {
-    const ApiMovie = 'https://api.themoviedb.org/3/discover/movie?api_key=2b7967016caccd29bc0963cc37da9477'
-    const res = await fetch(ApiMovie)
-    const data = await res.json()
-    setMovies(data.results)
-
-  }
-
-  //Fetch movie + id
-  const fetchMovie = async (id) => {
-    const url = `https://api.themoviedb.org/3/movie/${id}?api_key=2b7967016caccd29bc0963cc37da9477&language=en-US`
-    const res = await fetch(url)
-    const data = await res.json()
+ 
+ const movieDetail = async (id) => {
+    const data = await fetchMovie(id)
     setMovie(data)
   }
 
-  //Query search 
-  const queryMovieSearch = async (searchValue) => {
-    const url = `https://api.themoviedb.org/3/search/movie?api_key=2b7967016caccd29bc0963cc37da9477&query=${searchValue}`
-    const res = await fetch(url)
-    const data = await res.json()
-    if (data.results) {
-      setMovies(data.results)
-    } else {
-      fetchMovies()
-    }
-  }
+ 
 
   return (
     <div className='container'>
@@ -55,7 +47,7 @@ function App() {
         movies={movies}
         searchValue={searchValue}
         setSearchValue={setSearchValue}
-        onShowDetail={fetchMovie}
+        onShowDetail={movieDetail}
       />
       {(movie.title !== undefined) ? <MovieDetail movie={movie} /> : <Welcome/>}
     </div>
